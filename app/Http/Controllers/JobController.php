@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\JobRequest;
 use App\Job;
+use App\Notifications\HrNotification;
+use App\Notifications\ModeratorNotification;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 
 class JobController extends Controller
 {
@@ -20,20 +25,18 @@ class JobController extends Controller
 
     public function publishJob()
     {
-        $allJobs = Job::all();
+        $allJobs = Job::all()->sortByDesc('created_at');
 
         return view('publish-job', compact('allJobs'));
     }
 
-    public function storeJob(Request $request)
+    public function storeJob(JobRequest $jobRequest)
     {
-        $request->validate([
-            'title' => 'required',
-            'email' => 'required',
-            'description' => 'required',
-        ]);
+        $validation = $jobRequest->validated();
 
-        $input = $request->all();
+        if ($validation) {
+            $input = $jobRequest->all();
+        }
 
         $data = [
             'title' => $input['title'],
@@ -45,6 +48,22 @@ class JobController extends Controller
         $job = new Job();
         $job->fill($data)->save();
 
-        return redirect()->back();
+        $jobByUser = Job::where('usr_id', '=', Auth::user()->id)->get();
+
+        if (count($jobByUser) == 1) {
+
+            // notify hr manager
+            Notification::route('mail', $input['email'])
+                ->notify(new HrNotification());
+
+            // notify job moderator
+            $emailModerator = User::where('role', 'moderator')->value('email');
+            Notification::route('mail', $emailModerator)
+                ->notify(new ModeratorNotification($jobRequest));
+
+            return redirect()->back();
+        } else {
+            return redirect()->back();
+        }
     }
 }

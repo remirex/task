@@ -33,7 +33,16 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
-
+                        <li class="nav-item">
+                            <a href="{{route('publish-job')}}" class="nav-link">
+                                Publish JOB
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{route('add-job')}}" class="nav-link">
+                                Add JOB
+                            </a>
+                        </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->

@@ -10,3 +10,10 @@
 - Run php artisan db:seed
 - Run php artisan make:auth
 - Run php artisan serve
+
+## Test Users
+
+1. email: moderator@example.com pass: moderator1234
+2. email: hr1@example.com pass: hr1234
+3. email: hr2@example.com pass: hr1234
+4. email: hr3@example.com pass: hr1234

@@ -13,14 +13,17 @@ class ModeratorNotification extends Notification
 {
     use Queueable;
 
+    private $jobId;
+
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(JobRequest $jobRequest)
+    public function __construct(JobRequest $jobRequest, $jobId)
     {
         $this->message = $jobRequest;
+        $this->jobId = $jobId;
     }
 
     /**
@@ -42,10 +45,13 @@ class ModeratorNotification extends Notification
      */
     public function toMail($notifiable)
     {
+        $link = url('/publish', $this->jobId);
+
         return (new MailMessage)
                     ->line('The introduction to the notification.')
                     ->line('Title: '. $this->message->get('title'))
                     ->line('Description: '. $this->message->get('description'))
+                    ->action('Publish Job', $link)
                     ->line('Thank you for using our application!');
     }
 

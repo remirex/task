@@ -20,4 +20,5 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/add-job', 'JobController@addJob')->name('add-job');
 Route::get('/publish-job', 'JobController@publishJob')->name('publish-job');
+Route::get('/publish/{jobId}', 'JobController@publish')->name('publish');
 Route::post('/add-job', 'JobController@storeJob')->name('store-job');

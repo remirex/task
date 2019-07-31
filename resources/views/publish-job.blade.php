@@ -11,6 +11,7 @@
                     </div>
                     <div class="card-footer">
                         <p class="float-right">Posted By: <span class="font-weight-bold">{{$job->user->name}}</span></p>
+                        <p class="float-left">Created At: <span class="font-weight-bold">{{$job->created_at}}</span></p>
                     </div>
                 </div>
                 @endforeach

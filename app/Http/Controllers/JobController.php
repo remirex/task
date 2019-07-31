@@ -25,7 +25,7 @@ class JobController extends Controller
 
     public function publishJob()
     {
-        $allJobs = Job::all()->sortByDesc('created_at');
+        $allJobs = Job::where('publish', '=', true)->orderBy('id','desc')->get();
 
         return view('publish-job', compact('allJobs'));
     }
@@ -42,7 +42,8 @@ class JobController extends Controller
             'title' => $input['title'],
             'email' => $input['email'],
             'description' => $input['description'],
-            'usr_id' => Auth::user()->id
+            'usr_id' => Auth::user()->id,
+            'publish' => false
         ];
 
         $job = new Job();
@@ -58,12 +59,25 @@ class JobController extends Controller
 
             // notify job moderator
             $emailModerator = User::where('role', 'moderator')->value('email');
+            $jobId = $job->id;
             Notification::route('mail', $emailModerator)
-                ->notify(new ModeratorNotification($jobRequest));
+                ->notify(new ModeratorNotification($jobRequest, $jobId));
 
             return redirect()->back();
         } else {
+            $job->publish = true;
+            $job->save();
+
             return redirect()->back();
         }
+    }
+
+    public function publish($jobId)
+    {
+        $job = Job::find($jobId);
+        $job->publish = true;
+        $job->save();
+
+        return redirect()->route('publish-job');
     }
 }
